@@ -6,6 +6,7 @@ require "svg_sparklines/origin_transformation"
 require "svg_sparklines/chart"
 require "svg_sparklines/line_chart"
 require "svg_sparklines/doughnut_chart"
+require "svg_sparklines/bar_chart"
 
 module SvgSparklines
 
