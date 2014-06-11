@@ -4,6 +4,8 @@ require "svg_sparklines/transformation"
 require "svg_sparklines/scale_to_fit_transformation"
 require "svg_sparklines/origin_transformation"
 require "svg_sparklines/chart"
+require "svg_sparklines/line_chart"
+require "svg_sparklines/doughnut_chart"
 
 module SvgSparklines
 
