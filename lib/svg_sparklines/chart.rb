@@ -14,7 +14,7 @@ module SvgSparklines
     end
 
     def render
-      ["<svg #{ svg_options }>", render_data, "</svg>"].flatten.join
+      ["<svg #{ svg_options }>", render_data, "</svg>"].flatten.join.gsub("\n", " ").squeeze(" ")
     end
 
     def render_data

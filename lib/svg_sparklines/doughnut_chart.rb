@@ -25,23 +25,23 @@ module SvgSparklines
   end
 
 
-  class DoughnutChart < Chart
-    
-    attr_accessor :radius, :degrees, :thickness, :fill, :stroke
+  class DougnutSegment
 
-    def after_initialize(args)
+    attr_accessor :radius, :degrees, :thickness
+
+    def initialize(args)
       @degrees = args.fetch(:degrees)
       @radius = args.fetch(:radius, 20)
       @thickness = args.fetch(:thickness, 5)
-      @fill = args.fetch(:fill, "#000000")
-      @stroke = args.fetch(:stroke, "none")
-
-      @width = @height = 2 * radius
     end
 
-    def render_data
-      %[ 
-        <path d="#{ d }" style="#{ style }" transform="translate(#{ outer_arc_radius }) rotate(90)"/> 
+    def to_s
+      %[
+        M#{ coordinates[0] }
+        A#{ outer_arc_radius } 0 #{ sweep },1 #{ coordinates[1] }
+        L#{ coordinates[2] }
+        A-#{ inner_arc_radius } 0 #{ sweep },0 #{ coordinates[3] }
+        Z
       ]
     end
 
@@ -49,20 +49,6 @@ module SvgSparklines
 
       def sweep
         degrees >= 180 ? 1 : 0
-      end
-
-      def style
-        %[ fill: #{ fill }; stroke: #{ stroke }; ]
-      end
-
-      def d
-        %[
-          M#{ coordinates[0] }
-          A#{ outer_arc_radius } 0 #{ sweep },1 #{ coordinates[1] }
-          L#{ coordinates[2] }
-          A-#{ inner_arc_radius } 0 #{ sweep },0 #{ coordinates[3] }
-          Z
-        ]
       end
 
       def outer_arc_radius
@@ -88,6 +74,49 @@ module SvgSparklines
           {radius: inner_radius,  degrees: degrees},
           {radius: inner_radius,  degrees: 0}
         ]
+      end
+
+
+  end
+
+  class DoughnutChart < Chart
+    
+    attr_accessor :radius, :degrees, :thickness, :fill, :background
+
+    def after_initialize(args)
+      @degrees = args.fetch(:degrees)
+      @radius = args.fetch(:radius, 20)
+      @thickness = args.fetch(:thickness, 5)
+      @fill = args.fetch(:fill, "#000000")
+      @background = args.fetch(:background, "#cccccc")
+      @width = @height = 2 * radius
+    end
+
+    def render_data
+      %[ 
+        <g transform="translate(#{ origin })">
+          <path d="#{ d(360-degrees) }" style="#{ background_style }" transform="rotate(#{ degrees - 90})"/> 
+          <path d="#{ d(degrees) }" style="#{ style }" transform="rotate(-90)"/> 
+        </g>
+      ]
+    end
+
+    protected
+
+      def origin
+        [radius,radius].join(",")
+      end
+
+      def style
+        %[ fill: #{ fill }; ]
+      end
+
+      def background_style
+        %[ fill: #{ background }; ]
+      end
+
+      def d(degrees)
+        DougnutSegment.new(radius: radius, degrees: degrees, thickness: thickness)
       end
 
   end
